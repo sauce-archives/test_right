@@ -1,13 +1,17 @@
 module Test
   module Right
     class CLI
-      def self.start(argument_list)
-        cli = self.new
-        cli.load_selectors
+      RUBY_FILE = /^[^.].+.rb$/
+
+
+      def start(argument_list)
+        load_selectors
+        load_widgets
+        load_features
+
+        Runner.new(selectors, widgets, features).run
       end
 
-      def initialize
-      end
 
       def load_selectors
         begin
@@ -19,18 +23,40 @@ module Test
         end
       end
 
+      def selectors
+        @selectors
+      end
+
       def load_widgets
         raise ConfigurationError, "no widgets/ directory" unless File.directory? "widgets"
 
         Dir.foreach "widgets" do |widget_definition|
           unless [".", ".."].include? widget_definition
-            load "widgets/#{widget_definition}"
+            if widget_definition =~ RUBY_FILE
+              load "widgets/#{widget_definition}"
+            end
           end
         end
       end
 
       def widgets
-        Widget.subclasses
+        Widget.subclasses || []
+      end
+
+      def load_features
+        raise ConfigurationError, "no features/ directory" unless File.directory? "features"
+
+        Dir.foreach "features" do |feature_definition|
+          unless [".", ".."].include? feature_definition
+            if feature_definition =~ RUBY_FILE
+              load "features/#{feature_definition}"
+            end
+          end
+        end
+      end
+
+      def features
+        Feature.subclasses || []
       end
     end
   end

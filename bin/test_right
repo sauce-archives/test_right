@@ -7,4 +7,4 @@ $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 
 require 'test/right'
 
-Test::Right::CLI.start(ARGV)
+Test::Right::CLI.new.start(ARGV)
