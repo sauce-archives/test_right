@@ -18,6 +18,20 @@ module Test
           raise ConfigurationError, "selectors.rb not found"
         end
       end
+
+      def load_widgets
+        raise ConfigurationError, "no widgets/ directory" unless File.directory? "widgets"
+
+        Dir.foreach "widgets" do |widget_definition|
+          unless [".", ".."].include? widget_definition
+            load "widgets/#{widget_definition}"
+          end
+        end
+      end
+
+      def widgets
+        Widget.subclasses
+      end
     end
   end
 end
