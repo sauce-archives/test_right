@@ -9,7 +9,19 @@ module Test
         load_widgets
         load_features
 
-        Runner.new(selectors, widgets, features).run
+        puts "Running #{features.size} features"
+        runner = Runner.new(selectors, widgets, features)
+        if runner.run
+          puts "Passed!"
+        else
+          puts "Failed:"
+          runner.results.each do |feature, feature_result|
+            puts "  #{feature}"
+            feature_result.each do |method, result|
+              puts "    #{method} => #{result}"
+            end
+          end
+        end
       end
 
 
@@ -29,14 +41,7 @@ module Test
 
       def load_widgets
         raise ConfigurationError, "no widgets/ directory" unless File.directory? "widgets"
-
-        Dir.foreach "widgets" do |widget_definition|
-          unless [".", ".."].include? widget_definition
-            if widget_definition =~ RUBY_FILE
-              load "widgets/#{widget_definition}"
-            end
-          end
-        end
+        load_ruby_in_dir("widgets")
       end
 
       def widgets
@@ -45,18 +50,23 @@ module Test
 
       def load_features
         raise ConfigurationError, "no features/ directory" unless File.directory? "features"
-
-        Dir.foreach "features" do |feature_definition|
-          unless [".", ".."].include? feature_definition
-            if feature_definition =~ RUBY_FILE
-              load "features/#{feature_definition}"
-            end
-          end
-        end
+        load_ruby_in_dir("features")
       end
 
       def features
         Feature.subclasses || []
+      end
+
+      private
+      
+      def load_ruby_in_dir(dirname)
+        Dir.foreach dirname do |filename|
+          unless [".", ".."].include? filename
+            if filename =~ RUBY_FILE
+              load "#{dirname}/#{filename}"
+            end
+          end
+        end
       end
     end
   end
