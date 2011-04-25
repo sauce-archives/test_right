@@ -92,6 +92,22 @@ class TestCLI < Test::Unit::TestCase
     end
   end
 
+  def test_finds_testright
+    in_new_dir do
+      Dir.mkdir("test")
+      Dir.mkdir("test/right")
+      Dir.chdir("test/right") do
+        make_selectors_file
+        make_widget
+        make_feature
+      end
+      cli = Test::Right::CLI.new
+      assert_nothing_raised do
+        cli.start([])
+      end
+    end
+  end
+
   private
 
   def make_config

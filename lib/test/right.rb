@@ -1,3 +1,5 @@
+require 'test/unit/assertions'
+
 module Test
   module Right
   end

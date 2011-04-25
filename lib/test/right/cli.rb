@@ -16,10 +16,14 @@ module Test
       end
 
       def load_and_run_tests
-        load_config
-        load_selectors
-        load_widgets
-        load_features
+        if File.directory? "test/right"
+          Dir.chdir("test/right") do
+            load_config
+            load_selectors
+            load_widgets
+            load_features
+          end
+        end
 
         puts "Running #{features.size} features"
         runner = Runner.new(config, selectors, widgets, features)

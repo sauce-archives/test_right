@@ -1,4 +1,4 @@
-class MockDriver
+class MockDriver < Test::Right::BrowserDriver
   def initialize(config=nil)
     unless config.nil?
       @base_url = config[:base_url]
@@ -7,6 +7,11 @@ class MockDriver
 
   def quit
 
+  end
+
+  private
+  def method_missing(name, *args)
+    raise "Method Not found"
   end
 end
 

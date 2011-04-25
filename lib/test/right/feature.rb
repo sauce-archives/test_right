@@ -2,6 +2,7 @@ module Test
   module Right
     class Feature
       extend Utils::SubclassTracking
+      include Test::Unit::Assertions
 
       def initialize(runner)
         @runner = runner

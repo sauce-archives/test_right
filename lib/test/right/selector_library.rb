@@ -18,13 +18,12 @@ module Test
         
         private
 
-        def field(name, locator)
+        def element(name, locator)
           @selectors[name] = locator
         end
-        
-        def button(name, locator)
-          @selectors[name] = locator
-        end
+
+        alias :button :element
+        alias :field :element
 
         def lives_at(url)
           @location = url

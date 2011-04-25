@@ -78,10 +78,10 @@ class TestWidget < Test::Unit::TestCase
     WidgetThatDoesThings.new(mock_driver, @widget_selectors).go_to_google
   end
 
-  #def test_lives_at
-    #mock_driver = MockDriver.new
-    #mock_driver.expects(:get).with("http://myapp.testing/foo/bar")
+  def test_lives_at
+    mock_driver = MockDriver.new
+    mock_driver.expects(:get).with("/foo/bar", :relative => true)
 
-    #WidgetThatDoesThings.new(mock_driver, @widget_selectors).visit
-  #end
+    WidgetThatDoesThings.new(mock_driver, @widget_selectors).visit
+  end
 end

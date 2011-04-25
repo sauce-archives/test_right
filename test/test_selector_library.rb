@@ -25,6 +25,13 @@ class TestSelectorLibrary < Test::Unit::TestCase
     assert_equal "/foo/bar", @selectors.widgets["foo"].location
   end
 
+  def test_element
+    @selectors.widget "foo" do
+      element :foo, :id => "foo"
+    end
+    assert_equal({:id => 'foo'}, @selectors.widgets['foo'][:foo])
+  end
+
   %w<field button>.each do |thingtype|
     define_method "test_"+thingtype do
       @selectors.widget "foo" do
