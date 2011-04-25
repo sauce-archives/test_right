@@ -8,6 +8,16 @@ Rake::TestTask.new(:test) do |test|
   test.verbose = true
 end
 
+require 'rcov/rcovtask'
+Rcov::RcovTask.new do |t|
+  #t.test_files = FileList['test/test_*.rb']
+  t.ruby_opts << "-Ilib" # in order to use this rcov
+  t.ruby_opts << "-Itest"
+  t.rcov_opts << "--xrefs"  # comment to disable cross-references
+  t.rcov_opts << "--exclude-only" << "test/test*,^\/,^features\/,^widgets\/,test/helper.rb,test/mock_driver.rb"
+  t.verbose = true
+end
+
 task :build do
   unless system "gem build test_right.gemspec"
     raise "Failed to build"
