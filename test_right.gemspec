@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.email = %q{help@saucelabs.com}
   s.files = [
     "LICENSE",
+    "README.md",
     "Rakefile",
   ] + Dir.glob("lib/**/*")
   

@@ -2,6 +2,8 @@ require 'helper'
 require 'tmpdir'
 
 class TestCLI < Test::Unit::TestCase
+  include TestRightTestingUtils
+
   def test_fails_with_no_selectors_file
     assert_raises Test::Right::ConfigurationError do
       cli = Test::Right::CLI.new
@@ -72,15 +74,16 @@ class TestCLI < Test::Unit::TestCase
     end
   end
 
-  private
-
-  def in_new_dir
-    Dir.mktmpdir do |path|
-      Dir.chdir(path) do
-        yield
-      end
+  def test_generate
+    in_new_dir do
+      cli = Test::Right::CLI.new
+      cli.start(["install"])
+      assert File.exists? "test"
+      assert File.exists? "test/right"
     end
   end
+
+  private
 
   def make_selectors_file
     File.open "selectors.rb", "wb" do |f|

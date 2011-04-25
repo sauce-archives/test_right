@@ -5,6 +5,15 @@ module Test
 
 
       def start(argument_list)
+        if argument_list.first == "install"
+          Generator.new(argument_list[1..-1]).generate
+          return
+        else
+          load_and_run_tests
+        end
+      end
+
+      def load_and_run_tests
         load_selectors
         load_widgets
         load_features
