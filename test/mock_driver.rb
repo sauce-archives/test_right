@@ -1,5 +1,8 @@
 class MockDriver
-  def method_missing(name, *args)
+  def quit
 
   end
+end
+
+class MockElement
 end

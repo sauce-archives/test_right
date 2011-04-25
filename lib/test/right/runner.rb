@@ -11,12 +11,12 @@ module Test
       end
 
       def run
-        num = rand(1000)
-        if $TESTING
+        if $MOCK_DRIVER
           @driver = MockDriver.new
         else
           @driver = BrowserDriver.new
         end
+
         begin
           @features.all? do |feature|
             run_feature(feature)
@@ -53,9 +53,23 @@ module Test
       end
 
       def selectors_for(klass)
-        name = klass.name.split(':').last.match(/^(.*)Widget$/)[1].downcase
+        name = klass.name.split(':').last.match(/^(.*)Widget$/)[1]
+        name = underscore(name).gsub(/_/, ' ')
         return @selectors.widgets[name]
       end
+
+      private
+
+      def underscore(camel_cased_word)
+        word = camel_cased_word.to_s.dup
+        word.gsub!(/::/, '/')
+        word.gsub!(/([A-Z]+)([A-Z][a-z])/,'\1_\2')
+        word.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
+        word.tr!("-", "_")
+        word.downcase!
+        word
+      end
+
     end
   end
 end

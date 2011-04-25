@@ -11,6 +11,12 @@ class TestSelectorLibrary < Test::Unit::TestCase
     assert !@selectors.widgets.empty?, "No widget was added to selector library"
   end
 
+  def test_widget_name_is_downcased
+    @selectors.widget "Foo" do
+    end
+    assert @selectors.widgets.include? 'foo'
+  end
+
   %w<field button>.each do |thingtype|
     define_method "test_"+thingtype do
       @selectors.widget "foo" do

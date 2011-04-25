@@ -29,7 +29,7 @@ module Test
       def widget(name, &definition)
         w = Widget.new
         w.instance_eval(&definition)
-        @widgets[name] = w
+        @widgets[name.downcase] = w
       end
 
       def widgets

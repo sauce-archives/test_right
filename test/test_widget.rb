@@ -39,7 +39,36 @@ class TestWidget < Test::Unit::TestCase
       CLASSDEFS
 
       mock_driver = MockDriver.new
-      WidgetWithField.new(mock_driver, nil).fill
+      element = MockElement.new
+
+      mock_driver.expects(:find_element).with(:id, 'foo').returns(element)
+      element.expects(:send_keys).with('bar')
+
+      selectors = {:foo => {:id => 'foo'}}
+      WidgetWithField.new(mock_driver, selectors).fill
+    ensure
+      Test::Right::Widget.wipe!
+    end
+  end
+
+  def test_click
+    begin
+      eval <<-CLASSDEFS
+      class WidgetWithField < Test::Right::Widget
+        def clickit
+          click :foo
+        end
+      end
+      CLASSDEFS
+
+      mock_driver = MockDriver.new
+      element = MockElement.new
+
+      mock_driver.expects(:find_element).with(:id, 'foo').returns(element)
+      element.expects(:click)
+
+      selectors = {:foo => {:id => 'foo'}}
+      WidgetWithField.new(mock_driver, selectors).clickit
     ensure
       Test::Right::Widget.wipe!
     end

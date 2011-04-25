@@ -2,6 +2,7 @@ require 'rubygems'
 require 'test/right'
 require 'test/unit'
 require 'mock_driver'
+require 'mocha'
 
-$TESTING = true
+$MOCK_DRIVER = true
 

@@ -18,7 +18,17 @@ class TestRunner < Test::Unit::TestCase
       def an_action
       end
     end
+
+    class TwoWordWidget < Test::Right::Widget
+      def an_action
+      end
+    end
     CLASSDEFS
+  end
+  
+  def teardown
+    Test::Right::Widget.wipe!
+    Test::Right::Feature.wipe!
   end
 
   def test_runs_nothing_on_nothing
@@ -44,6 +54,7 @@ class TestRunner < Test::Unit::TestCase
 
   def test_widgets
     library = Test::Right::SelectorLibrary.new
+    library.widget("simple"){}
     runner = Test::Right::Runner.new(library, [SimpleWidget], [FailingFeature])
     assert runner.widgets["simple"].is_a? SimpleWidget
   end
@@ -59,9 +70,22 @@ class TestRunner < Test::Unit::TestCase
     assert_not_nil selectors
     assert_equal({:id => 'foo'}, selectors[:foo])
   end
-  
-  def teardown
-    Test::Right::Widget.wipe!
-    Test::Right::Feature.wipe!
+
+  def test_selectors_for
+    library = Test::Right::SelectorLibrary.new
+    library.widget "simple" do
+      field :foo, :id => 'foo'
+    end
+
+    library.widget "two word" do
+
+    end
+
+    runner = Test::Right::Runner.new(library, [SimpleWidget], [])
+
+    assert_nothing_raised do
+      assert_not_nil runner.selectors_for(SimpleWidget)
+      assert_not_nil runner.selectors_for(TwoWordWidget)
+    end
   end
 end
