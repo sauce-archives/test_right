@@ -1,3 +1,5 @@
+require 'yaml'
+
 module Test
   module Right
     class CLI
@@ -14,12 +16,13 @@ module Test
       end
 
       def load_and_run_tests
+        load_config
         load_selectors
         load_widgets
         load_features
 
         puts "Running #{features.size} features"
-        runner = Runner.new(selectors, widgets, features)
+        runner = Runner.new(config, selectors, widgets, features)
         if runner.run
           puts "Passed!"
         else
@@ -42,6 +45,18 @@ module Test
             end
           end
         end
+      end
+
+      def load_config
+        options = {}
+        if File.exists? "config.yml"
+          options = YAML.load(open("config.yml"))
+        end
+        @config = Config.new(options)
+      end
+
+      def config
+        @config
       end
 
 

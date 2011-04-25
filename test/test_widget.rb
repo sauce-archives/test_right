@@ -24,6 +24,8 @@ class TestWidget < Test::Unit::TestCase
     @widget_selectors = Test::Right::SelectorLibrary::Widget.new
     @widget_selectors.instance_eval do
       @selectors = {:foo => {:id => 'foo'}}
+
+      lives_at "/foo/bar"
     end
   end
 
@@ -75,4 +77,11 @@ class TestWidget < Test::Unit::TestCase
 
     WidgetThatDoesThings.new(mock_driver, @widget_selectors).go_to_google
   end
+
+  #def test_lives_at
+    #mock_driver = MockDriver.new
+    #mock_driver.expects(:get).with("http://myapp.testing/foo/bar")
+
+    #WidgetThatDoesThings.new(mock_driver, @widget_selectors).visit
+  #end
 end

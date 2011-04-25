@@ -17,6 +17,14 @@ class TestSelectorLibrary < Test::Unit::TestCase
     assert @selectors.widgets.include? 'foo'
   end
 
+  def test_lives_at
+    @selectors.widget "foo" do
+      lives_at "/foo/bar"
+    end
+
+    assert_equal "/foo/bar", @selectors.widgets["foo"].location
+  end
+
   %w<field button>.each do |thingtype|
     define_method "test_"+thingtype do
       @selectors.widget "foo" do

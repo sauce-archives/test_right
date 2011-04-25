@@ -3,7 +3,8 @@ require 'selenium-webdriver'
 module Test
   module Right
     class BrowserDriver
-      def initialize
+      def initialize(config)
+        @base_url = config[:base_url]
         @driver = Selenium::WebDriver.for :firefox
       end
 

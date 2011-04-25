@@ -3,7 +3,8 @@ module Test
     class Runner
       attr_reader :results, :widget_classes, :driver
 
-      def initialize(selector_library, widgets, features)
+      def initialize(config, selector_library, widgets, features)
+        @config = config
         @selectors = selector_library
         @widget_classes = widgets
         @features = features
@@ -12,9 +13,9 @@ module Test
 
       def run
         if $MOCK_DRIVER
-          @driver = MockDriver.new
+          @driver = MockDriver.new(@config)
         else
-          @driver = BrowserDriver.new
+          @driver = BrowserDriver.new(@config)
         end
 
         begin

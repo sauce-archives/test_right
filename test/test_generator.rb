@@ -12,6 +12,7 @@ class TestGenerator < Test::Unit::TestCase
     in_new_dir do
       @generator.generate
       assert File.exists? "test/right/selectors.rb"
+      assert File.exists? "test/right/config.yml"
     end
   end
 end

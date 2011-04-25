@@ -2,6 +2,8 @@ module Test
   module Right
     class SelectorLibrary
       class Widget
+        attr_reader :location
+
         def initialize
           @selectors = {}
         end
@@ -22,6 +24,10 @@ module Test
         
         def button(name, locator)
           @selectors[name] = locator
+        end
+
+        def lives_at(url)
+          @location = url
         end
       end
 

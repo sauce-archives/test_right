@@ -8,6 +8,14 @@ module Test
         @selectors = selectors
       end
 
+      def visit
+        @driver.get(@selectors.location, :relative => true)
+      end
+
+      def method_missing(name, *args)
+        raise WidgetActionNotImplemented, "#{self.class.to_s}##{name.to_s} not implemented"
+      end
+
       private
 
       def fill_in(selector_name, value)
@@ -21,12 +29,6 @@ module Test
       def navigate_to(url)
         @driver.get(url)
       end
-
-      def method_missing(name, *args)
-        raise WidgetActionNotImplemented, "#{self.class.to_s}##{name.to_s} not implemented"
-      end
-
-      private
 
       def get_element(selector_name)
         if !@selectors.include?(selector_name)

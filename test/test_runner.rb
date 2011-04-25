@@ -32,13 +32,13 @@ class TestRunner < Test::Unit::TestCase
   end
 
   def test_runs_nothing_on_nothing
-    runner = Test::Right::Runner.new(nil, [], [])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, nil, [], [])
     assert runner.run
   end
 
   def test_passes
     library = Test::Right::SelectorLibrary.new
-    runner = Test::Right::Runner.new(library, [], [PassingFeature])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [], [PassingFeature])
 
     assert runner.run, "Runner should have passed: #{runner.results}"
     assert runner.results.include?(PassingFeature), "Didn't run Google Search"
@@ -46,7 +46,7 @@ class TestRunner < Test::Unit::TestCase
 
   def test_fails
     library = Test::Right::SelectorLibrary.new
-    runner = Test::Right::Runner.new(library, [], [FailingFeature])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [], [FailingFeature])
 
     assert !runner.run, "Runner should have failed"
     assert runner.results[FailingFeature][:test_fail] != true
@@ -55,7 +55,7 @@ class TestRunner < Test::Unit::TestCase
   def test_widgets
     library = Test::Right::SelectorLibrary.new
     library.widget("simple"){}
-    runner = Test::Right::Runner.new(library, [SimpleWidget], [FailingFeature])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [SimpleWidget], [FailingFeature])
     assert runner.widgets["simple"].is_a? SimpleWidget
   end
 
@@ -64,7 +64,7 @@ class TestRunner < Test::Unit::TestCase
     library.widget "simple" do
       field :foo, :id => 'foo'
     end
-    runner = Test::Right::Runner.new(library, [SimpleWidget], [])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [SimpleWidget], [])
     widget = runner.widgets["simple"]
     selectors = widget.instance_eval{@selectors}
     assert_not_nil selectors
@@ -81,7 +81,7 @@ class TestRunner < Test::Unit::TestCase
 
     end
 
-    runner = Test::Right::Runner.new(library, [SimpleWidget], [])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [SimpleWidget], [])
 
     assert_nothing_raised do
       assert_not_nil runner.selectors_for(SimpleWidget)

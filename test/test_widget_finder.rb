@@ -16,7 +16,7 @@ class TestWidgetFinder < Test::Unit::TestCase
     library = Test::Right::SelectorLibrary.new
     library.widget("simple"){}
     library.widget("two word"){}
-    runner = Test::Right::Runner.new(library, [SimpleWidget, TwoWordWidget, NoSelectorsWidget], [])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [SimpleWidget, TwoWordWidget, NoSelectorsWidget], [])
     @widget_finder = Test::Right::WidgetFinder.new(runner)
   end
 

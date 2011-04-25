@@ -78,12 +78,29 @@ class TestCLI < Test::Unit::TestCase
     in_new_dir do
       cli = Test::Right::CLI.new
       cli.start(["install"])
-      assert File.exists? "test"
       assert File.exists? "test/right"
     end
   end
 
+  def test_load_config
+    in_new_dir do
+      make_config
+
+      cli = Test::Right::CLI.new
+      cli.load_config
+      assert_equal "http://TESTING", cli.config[:base_url]
+    end
+  end
+
   private
+
+  def make_config
+    File.open "config.yml", "wb" do |f|
+      f.print <<-CONFIG
+        base_url: http://TESTING
+      CONFIG
+    end
+  end
 
   def make_selectors_file
     File.open "selectors.rb", "wb" do |f|

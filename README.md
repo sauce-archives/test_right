@@ -14,8 +14,9 @@ Setup
 The test_right executable will create a default directory structure in
 test/right for you to put your tests in.
 
-Begin by locating the testable elements on your pages and adding their
-locators to selectors.rb:
+Begin by setting the base_url setting in test/right/config.yml to the base URL
+of your application staging environment. Then, locate the testable elements
+on your pages and add their locators to selectors.rb:
 
     widget "login" do
       field :username, :id => 'username'
