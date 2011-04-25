@@ -18,12 +18,20 @@ class TestWidget < Test::Unit::TestCase
       def go_to_google
         navigate_to "http://www.google.com"
       end
+
+      def frob
+        get_element(:frobbable).frob
+      end
+
+      def frob_nonexistant
+        get_element(:not_frobbable).frob
+      end
     end
     CLASSDEFS
     
     @widget_selectors = Test::Right::SelectorLibrary::Widget.new
     @widget_selectors.instance_eval do
-      @selectors = {:foo => {:id => 'foo'}}
+      @selectors = {:foo => {:id => 'foo'}, :frobbable => {:id => 'f'}}
 
       lives_at "/foo/bar"
     end
@@ -83,5 +91,19 @@ class TestWidget < Test::Unit::TestCase
     mock_driver.expects(:get).with("/foo/bar", :relative => true)
 
     WidgetThatDoesThings.new(mock_driver, @widget_selectors).visit
+  end
+
+  def test_get_element
+    mock_element = mock()
+    mock_element.expects(:frob)
+    mock_driver = MockDriver.new
+    mock_driver.expects(:find_element).with(:id, 'f').returns(mock_element)
+    assert_nothing_raised do
+      WidgetThatDoesThings.new(mock_driver, @widget_selectors).frob
+    end
+
+    assert_raises Test::Right::SelectorNotFoundError do
+      WidgetThatDoesThings.new(mock_driver, @widget_selectors).frob_nonexistant
+    end
   end
 end
