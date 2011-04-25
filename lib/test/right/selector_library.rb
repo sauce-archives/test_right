@@ -8,7 +8,10 @@ module Test
 
         def [](name)
           @selectors[name]
+        end
 
+        def include?(name)
+          @selectors.include? name
         end
         
         private

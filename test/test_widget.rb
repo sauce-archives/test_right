@@ -5,7 +5,26 @@ class TestWidget < Test::Unit::TestCase
     eval <<-CLASSDEFS
     class SimpleWidget < Test::Right::Widget
     end
+
+    class WidgetThatDoesThings < Test::Right::Widget
+      def fill
+        fill_in :foo, "bar"
+      end
+
+      def clickit
+        click :foo
+      end
+
+      def go_to_google
+        navigate_to "http://www.google.com"
+      end
+    end
     CLASSDEFS
+    
+    @widget_selectors = Test::Right::SelectorLibrary::Widget.new
+    @widget_selectors.instance_eval do
+      @selectors = {:foo => {:id => 'foo'}}
+    end
   end
 
   def teardown
@@ -22,6 +41,7 @@ class TestWidget < Test::Unit::TestCase
   def test_raises_helpfully
     begin
       SimpleWidget.new(nil, nil).fail_action
+      raise "Shouldn't have gotten to this point"
     rescue Test::Right::WidgetActionNotImplemented => e
       assert e.message.include?("SimpleWidget"), e.message
       assert e.message.include?("fail_action"), e.message
@@ -29,48 +49,30 @@ class TestWidget < Test::Unit::TestCase
   end
 
   def test_fill_in
-    begin
-      eval <<-CLASSDEFS
-      class WidgetWithField < Test::Right::Widget
-        def fill
-          fill_in :foo, "bar"
-        end
-      end
-      CLASSDEFS
+    mock_driver = MockDriver.new
+    element = MockElement.new
 
-      mock_driver = MockDriver.new
-      element = MockElement.new
+    mock_driver.expects(:find_element).with(:id, 'foo').returns(element)
+    element.expects(:send_keys).with('bar')
 
-      mock_driver.expects(:find_element).with(:id, 'foo').returns(element)
-      element.expects(:send_keys).with('bar')
-
-      selectors = {:foo => {:id => 'foo'}}
-      WidgetWithField.new(mock_driver, selectors).fill
-    ensure
-      Test::Right::Widget.wipe!
-    end
+    WidgetThatDoesThings.new(mock_driver, @widget_selectors).fill
   end
 
   def test_click
-    begin
-      eval <<-CLASSDEFS
-      class WidgetWithField < Test::Right::Widget
-        def clickit
-          click :foo
-        end
-      end
-      CLASSDEFS
+    mock_driver = MockDriver.new
+    element = MockElement.new
 
-      mock_driver = MockDriver.new
-      element = MockElement.new
+    mock_driver.expects(:find_element).with(:id, 'foo').returns(element)
+    element.expects(:click)
 
-      mock_driver.expects(:find_element).with(:id, 'foo').returns(element)
-      element.expects(:click)
+    WidgetThatDoesThings.new(mock_driver, @widget_selectors).clickit
+  end
 
-      selectors = {:foo => {:id => 'foo'}}
-      WidgetWithField.new(mock_driver, selectors).clickit
-    ensure
-      Test::Right::Widget.wipe!
-    end
+  def test_navigate_to
+    mock_driver = MockDriver.new
+
+    mock_driver.expects(:get).with("http://www.google.com")
+
+    WidgetThatDoesThings.new(mock_driver, @widget_selectors).go_to_google
   end
 end

@@ -8,24 +8,18 @@ module Test
         @selectors = selectors
       end
 
-      def fill_in(selector_name, value)
-        if !@selectors.include?(selector_name)
-          raise SelectorNotFoundError, "Selector \"#{selector_name}\" for Widget \"#{self.class}\" not found"
-        end
+      private
 
-        selector = @selectors[selector_name]
-        element = @driver.find_element(selector.keys.first, selector.values.first)
-        element.send_keys(value)
+      def fill_in(selector_name, value)
+        get_element(selector_name).send_keys(value)
       end
       
       def click(selector_name)
-        if !@selectors.include?(selector_name)
-          raise SelectorNotFoundError, "Selector \"#{selector_name}\" for Widget \"#{self.class}\" not found"
-        end
+        get_element(selector_name).click
+      end
 
-        selector = @selectors[selector_name]
-        element = @driver.find_element(selector.keys.first, selector.values.first)
-        element.click
+      def navigate_to(url)
+        @driver.get(url)
       end
 
       def method_missing(name, *args)
@@ -35,6 +29,12 @@ module Test
       private
 
       def get_element(selector_name)
+        if !@selectors.include?(selector_name)
+          raise SelectorNotFoundError, "Selector \"#{selector_name}\" for Widget \"#{self.class}\" not found"
+        end
+
+        selector = @selectors[selector_name]
+        element = @driver.find_element(selector.keys.first, selector.values.first)
       end
     end
   end
