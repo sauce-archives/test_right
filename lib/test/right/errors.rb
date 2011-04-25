@@ -1,9 +1,11 @@
 module Test
   module Right
-    class ConfigurationError < StandardError; end
-    class WidgetActionNotImplemented < StandardError; end
-    class WidgetNotFoundError < StandardError; end
-    class SelectorNotFoundError < StandardError; end
-    class SelectorsNotFoundError < StandardError; end
+    class Error < StandardError; end
+    class ConfigurationError < Error; end
+    class WidgetActionNotImplemented < Error; end
+    class WidgetNotFoundError < Error; end
+    class SelectorNotFoundError < Error; end
+    class SelectorsNotFoundError < Error; end
+    class ElementNotFoundError < Error; end
   end
 end

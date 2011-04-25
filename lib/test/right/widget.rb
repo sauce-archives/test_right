@@ -36,7 +36,11 @@ module Test
         end
 
         selector = @selectors[selector_name]
-        element = @driver.find_element(selector.keys.first, selector.values.first)
+        begin
+          element = @driver.find_element(selector.keys.first, selector.values.first)
+        rescue Selenium::WebDriver::Error::NoSuchElementError => e
+          raise ElementNotFoundError, e.message
+        end
       end
     end
   end

@@ -105,5 +105,12 @@ class TestWidget < Test::Unit::TestCase
     assert_raises Test::Right::SelectorNotFoundError do
       WidgetThatDoesThings.new(mock_driver, @widget_selectors).frob_nonexistant
     end
+
+    mock_driver.expects(:find_element).with(:id, 'foo').raises(Selenium::WebDriver::Error::NoSuchElementError)
+    assert_raises Test::Right::ElementNotFoundError do
+      WidgetThatDoesThings.new(mock_driver, @widget_selectors).instance_eval do
+        get_element :foo
+      end
+    end
   end
 end
