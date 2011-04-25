@@ -9,7 +9,9 @@ Rake::TestTask.new(:test) do |test|
 end
 
 task :build do
-  system "gem build test_right.gemspec"
+  unless system "gem build test_right.gemspec"
+    raise "Failed to build"
+  end
 end
 
 desc 'Release gem to rubygems.org'
@@ -38,4 +40,4 @@ task :push do
   system "git push origin master --tags"
 end
 
-task :default => [:tag, :release, :push]
+task :default => [:test, :tag, :push]

@@ -8,10 +8,10 @@ Gem::Specification.new do |s|
   s.authors = ["Eric Allen", "Sean Grove"]
   s.date = %q{2011-04-25}
   s.description = %q{An opinionated browser testing framework}
+  s.summary = %q{An opinionated browser testing framework}
   s.email = %q{help@saucelabs.com}
   s.files = [
     "LICENSE",
-    "README",
     "Rakefile",
   ] + Dir.glob("lib/**/*")
   
