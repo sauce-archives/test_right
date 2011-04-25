@@ -1,4 +1,4 @@
-require 'test_helper'
+require 'helper'
 require 'tmpdir'
 
 class TestCLI < Test::Unit::TestCase
@@ -10,8 +10,7 @@ class TestCLI < Test::Unit::TestCase
   end
 
   def test_parses_selectors
-    Dir.mktmpdir do |path|
-      Dir.chdir(path)
+    in_new_dir do
       make_selectors_file
 
       cli = Test::Right::CLI.new
@@ -29,8 +28,7 @@ class TestCLI < Test::Unit::TestCase
   end
 
   def test_finds_widgets
-    Dir.mktmpdir do |path|
-      Dir.chdir(path)
+    in_new_dir do
       make_widget
 
       cli = Test::Right::CLI.new
@@ -41,8 +39,7 @@ class TestCLI < Test::Unit::TestCase
   end
 
   def test_avoids_non_widgets
-    Dir.mktmpdir do |path|
-      Dir.chdir(path)
+    in_new_dir do
       make_widget("foo.rb.zzz")
 
       cli = Test::Right::CLI.new
@@ -53,8 +50,7 @@ class TestCLI < Test::Unit::TestCase
   end
 
   def test_finds_features
-    Dir.mktmpdir do |path|
-      Dir.chdir(path)
+    in_new_dir do
       make_feature
 
       cli = Test::Right::CLI.new
@@ -80,8 +76,9 @@ class TestCLI < Test::Unit::TestCase
 
   def in_new_dir
     Dir.mktmpdir do |path|
-      Dir.chdir(path)
-      yield
+      Dir.chdir(path) do
+        yield
+      end
     end
   end
 

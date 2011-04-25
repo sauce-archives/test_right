@@ -1,4 +1,4 @@
-require 'test_helper'
+require 'helper'
 
 class TestSelectorLibrary < Test::Unit::TestCase
   def setup
@@ -18,5 +18,13 @@ class TestSelectorLibrary < Test::Unit::TestCase
       end
       assert !@selectors.widgets.empty?, "No widget was added to selector library for #{thingtype}"
     end
+  end
+
+  def test_get_selectors_for_widget
+    @selectors.widget "foo" do
+      field :bar, :id => 'baz'
+    end
+
+    assert_equal({:id => 'baz'}, @selectors.widgets['foo'][:bar])
   end
 end

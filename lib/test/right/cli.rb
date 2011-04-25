@@ -18,7 +18,18 @@ module Test
           runner.results.each do |feature, feature_result|
             puts "  #{feature}"
             feature_result.each do |method, result|
-              puts "    #{method} => #{result}"
+              if result.is_a? Exception
+                if result.is_a? WidgetActionNotImplemented
+                  puts "    #{method} => #{result}"
+                else
+                  puts "    #{method} => #{result.class} - #{result}"
+                  result.backtrace.each do |trace|
+                    puts "      #{trace}"
+                  end
+                end
+              else
+                puts "    #{method} => #{result}"
+              end
             end
           end
         end

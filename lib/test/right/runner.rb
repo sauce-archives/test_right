@@ -1,18 +1,28 @@
 module Test
   module Right
     class Runner
-      attr_reader :results
+      attr_reader :results, :widget_classes, :driver
 
       def initialize(selector_library, widgets, features)
         @selectors = selector_library
-        @widgets = widgets
+        @widget_classes = widgets
         @features = features
         @results = {}
       end
 
       def run
-        @features.all? do |feature|
-          run_feature(feature)
+        num = rand(1000)
+        if $TESTING
+          @driver = MockDriver.new
+        else
+          @driver = BrowserDriver.new
+        end
+        begin
+          @features.all? do |feature|
+            run_feature(feature)
+          end
+        ensure
+          @driver.quit
         end
       end
 
@@ -34,8 +44,17 @@ module Test
       end
 
       def run_test(feature, method)
-        target = feature.new
+        target = feature.new(self)
         target.send(method)
+      end
+
+      def widgets
+        @widget_finder ||= WidgetFinder.new(self)
+      end
+
+      def selectors_for(klass)
+        name = klass.name.split(':').last.match(/^(.*)Widget$/)[1].downcase
+        return @selectors.widgets[name]
       end
     end
   end

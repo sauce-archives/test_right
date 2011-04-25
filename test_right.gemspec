@@ -15,5 +15,5 @@ Gem::Specification.new do |s|
     "Rakefile",
   ] + Dir.glob("lib/**/*")
   
-  s.add_dependency("sauce", ">= 1.0.0")
+  s.add_dependency("selenium-webdriver", ">= 0.2.0")
 end

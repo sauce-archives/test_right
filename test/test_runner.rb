@@ -1,4 +1,4 @@
-require 'test_helper'
+require 'helper'
 
 class TestRunner < Test::Unit::TestCase
   def setup
@@ -13,6 +13,11 @@ class TestRunner < Test::Unit::TestCase
         raise "FAIL"
       end
     end
+
+    class SimpleWidget < Test::Right::Widget
+      def an_action
+      end
+    end
     CLASSDEFS
   end
 
@@ -25,7 +30,7 @@ class TestRunner < Test::Unit::TestCase
     library = Test::Right::SelectorLibrary.new
     runner = Test::Right::Runner.new(library, [], [PassingFeature])
 
-    assert runner.run, "Runner should have passed"
+    assert runner.run, "Runner should have passed: #{runner.results}"
     assert runner.results.include?(PassingFeature), "Didn't run Google Search"
   end
 
@@ -35,6 +40,24 @@ class TestRunner < Test::Unit::TestCase
 
     assert !runner.run, "Runner should have failed"
     assert runner.results[FailingFeature][:test_fail] != true
+  end
+
+  def test_widgets
+    library = Test::Right::SelectorLibrary.new
+    runner = Test::Right::Runner.new(library, [SimpleWidget], [FailingFeature])
+    assert runner.widgets["simple"].is_a? SimpleWidget
+  end
+
+  def test_injects_selectors_into_widgets
+    library = Test::Right::SelectorLibrary.new
+    library.widget "simple" do
+      field :foo, :id => 'foo'
+    end
+    runner = Test::Right::Runner.new(library, [SimpleWidget], [])
+    widget = runner.widgets["simple"]
+    selectors = widget.instance_eval{@selectors}
+    assert_not_nil selectors
+    assert_equal({:id => 'foo'}, selectors[:foo])
   end
   
   def teardown
