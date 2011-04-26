@@ -16,14 +16,20 @@ module Test
       end
 
       def load_and_run_tests
+        run_setup
+
+        subdir = false
         if File.directory? "test/right"
-          Dir.chdir("test/right") do
-            load_config
-            load_selectors
-            load_widgets
-            load_features
-          end
+          Dir.chdir("test/right")
+          subdir = true
         end
+
+        load_config
+        load_selectors
+        load_widgets
+        load_features
+        
+        Dir.chdir("../..") if subdir
 
         puts "Running #{features.size} features"
         runner = Runner.new(config, selectors, widgets, features)
@@ -47,6 +53,18 @@ module Test
                 puts "    #{method} => #{result}"
               end
             end
+          end
+        end
+      end
+
+      def run_setup
+        if File.exists? "setup.rb"
+          unless system("./setup.rb")
+            raise ConfigurationError, "Setup failed"
+          end
+        elsif File.exists? "test/right/setup.rb"
+          unless system("test/right/setup.rb")
+            raise ConfigurationError, "Setup failed"
           end
         end
       end

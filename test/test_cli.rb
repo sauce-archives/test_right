@@ -108,6 +108,28 @@ class TestCLI < Test::Unit::TestCase
     end
   end
 
+  def test_setup
+    in_new_dir do
+      File.open "setup.rb", "wb" do |f|
+        f.print <<-EOF
+#!/usr/bin/env ruby
+File.open "foo.tmp", "wb" do |f|
+  f.print "foo"
+end
+        EOF
+
+        f.chmod(0755)
+      end
+      make_selectors_file
+      make_widget
+      make_feature
+
+      cli = Test::Right::CLI.new
+      cli.start([])
+      assert File.exists?("foo.tmp"), "CLI didn't run setup.rb"
+    end
+  end
+
   private
 
   def make_config
