@@ -19,7 +19,7 @@ module Test
         end
 
         begin
-          @features.all? do |feature|
+          @features.sort_by{|x| rand(10000)}.all? do |feature|
             run_feature(feature)
           end
         ensure
@@ -28,7 +28,8 @@ module Test
       end
 
       def run_feature(feature)
-        feature.instance_methods.all? do |method_name|
+        methods = feature.instance_methods
+        methods.sort_by{|x| rand(10000)}.all? do |method_name|
           @results[feature] = {}
           begin
             if method_name =~ /^test_/

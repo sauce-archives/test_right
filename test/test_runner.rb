@@ -88,4 +88,38 @@ class TestRunner < Test::Unit::TestCase
       assert_not_nil runner.selectors_for(TwoWordWidget)
     end
   end
+
+  def test_random_test_order
+    $test_sequence = []
+    eval <<-FEATURES
+    class FeatureA < Test::Right::Feature
+      def test_aa
+        $test_sequence << :aa
+      end
+      def test_ab
+        $test_sequence << :ab
+      end
+    end
+
+    class FeatureB < Test::Right::Feature
+      def test_ba
+        $test_sequence << :ba
+      end
+      def test_bb
+        $test_sequence << :bb
+      end
+    end
+    FEATURES
+
+    library = Test::Right::SelectorLibrary.new
+    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [], [FeatureA, FeatureB])
+    assert runner.run, runner.results.inspect
+    first_sequence = Array.new($test_sequence)
+
+    $test_sequence = []
+    assert runner.run, runner.results.inspect
+    second_sequence = Array.new($test_sequence)
+
+    assert_not_equal first_sequence, second_sequence
+  end
 end
