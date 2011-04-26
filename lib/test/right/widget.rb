@@ -31,16 +31,30 @@ module Test
       end
 
       def get_element(selector_name)
+        selector = find_selector(selector_name)
+        begin
+          element = @driver.find_element(*selector)
+        rescue Selenium::WebDriver::Error::NoSuchElementError => e
+          raise ElementNotFoundError, e.message
+        end
+      end
+
+      def get_elements(selector_name)
+        selector = find_selector(selector_name)
+        begin
+          element = @driver.find_elements(*selector)
+        rescue Selenium::WebDriver::Error::NoSuchElementError => e
+          raise ElementNotFoundError, e.message
+        end
+      end
+
+      def find_selector(selector_name)
         if !@selectors.include?(selector_name)
           raise SelectorNotFoundError, "Selector \"#{selector_name}\" for Widget \"#{self.class}\" not found"
         end
 
         selector = @selectors[selector_name]
-        begin
-          element = @driver.find_element(selector.keys.first, selector.values.first)
-        rescue Selenium::WebDriver::Error::NoSuchElementError => e
-          raise ElementNotFoundError, e.message
-        end
+        return [selector.keys.first, selector.values.first]
       end
     end
   end

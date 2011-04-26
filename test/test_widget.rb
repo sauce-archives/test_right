@@ -26,12 +26,16 @@ class TestWidget < Test::Unit::TestCase
       def frob_nonexistant
         get_element(:not_frobbable).frob
       end
+
+      def get_foos
+        get_elements(:foos)
+      end
     end
     CLASSDEFS
     
     @widget_selectors = Test::Right::SelectorLibrary::Widget.new
     @widget_selectors.instance_eval do
-      @selectors = {:foo => {:id => 'foo'}, :frobbable => {:id => 'f'}}
+      @selectors = {:foo => {:id => 'foo'}, :frobbable => {:id => 'f'}, :foos => {:css => '.foo'}}
 
       lives_at "/foo/bar"
     end
@@ -111,6 +115,14 @@ class TestWidget < Test::Unit::TestCase
       WidgetThatDoesThings.new(mock_driver, @widget_selectors).instance_eval do
         get_element :foo
       end
+    end
+  end
+
+  def test_get_elements
+    mock_driver = MockDriver.new
+    mock_driver.expects(:find_elements).with(:css, '.foo')
+    assert_nothing_raised do
+      WidgetThatDoesThings.new(mock_driver, @widget_selectors).get_foos
     end
   end
 end

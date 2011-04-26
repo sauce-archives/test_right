@@ -7,5 +7,6 @@ module Test
     class SelectorNotFoundError < Error; end
     class SelectorsNotFoundError < Error; end
     class ElementNotFoundError < Error; end
+    class AssertionFailedError < Error; end
   end
 end
