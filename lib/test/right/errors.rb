@@ -10,5 +10,6 @@ module Test
     class AssertionFailedError < Error; end
     class WidgetConfigurationError < Error; end
     class WidgetNotPresentError < Error; end
+    class IAmConfusedError < Error; end
   end
 end

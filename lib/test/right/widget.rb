@@ -31,6 +31,10 @@ module Test
           @validator = selector
         end
 
+        def [](name)
+          WidgetProxy.new(self, name)
+        end
+
         alias_method :button, :element
         alias_method :field, :element
       end
@@ -46,46 +50,23 @@ module Test
         subclass.extend(ClassMethods)
       end
 
-      def initialize(driver, root=nil)
+      attr_reader :name
+
+      def initialize(driver, name=nil)
         @driver = driver
-        @root = root
+        @name = name
       end
 
       def visit
         @driver.get(@location, :relative => true)
       end
 
-      def [](name)
-        raise WidgetConfigurationError, "Tried to look up a #{self.class.name}, but it doesn't have a root" if self.class.root.nil?
-        raise WidgetConfigurationError, "Tried to look up a #{self.class.name}, but it doesn't have a naming element" if self.class.name_element.nil?
-
-        all_instances = @driver.find_elements(*self.class.root)
-        target = all_instances.find do |root_element|
-          begin
-            element_name = root_element.find_element(*self.class.name_element).text
-            name == element_name
-          rescue Selenium::WebDriver::Error::ObsoleteElementError
-            false
-          end
-        end
-        if target.nil?
-          raise WidgetNotPresentError, "#{self.class.name} with name \"#{name}\" not found"
-        else
-          return self.class.new(@driver, target)
-        end
-      end
-
       def exists?
-        if self.class.validator
-          begin
-            get_element(self.class.validator)
-            return true
-          rescue ElementNotFoundError
-            return false
-          end
-        else
-          # Raise exception?
+        begin
+          root
           return true
+        rescue WidgetNotPresentError
+          return false
         end
       end
 
@@ -132,15 +113,6 @@ module Test
           end
         end
 
-        root = @driver
-        if self.class.root
-          begin
-            root = @driver.find_element(*self.class.root)
-          rescue Selenium::WebDriver::Error::NoSuchElementError => e
-            raise ElementNotFoundError, "root of #{self.class.name} not found using #{self.class.root.inspect}"
-          end
-        end
-
         begin
           root.find_element(*selector)
         rescue Selenium::WebDriver::Error::NoSuchElementError => e
@@ -151,7 +123,7 @@ module Test
       def get_elements(selector_name)
         selector = find_selector(selector_name)
         begin
-          element = @driver.find_elements(*selector)
+          element = root.find_elements(*selector)
         rescue Selenium::WebDriver::Error::NoSuchElementError => e
           raise ElementNotFoundError, e.message
         end
@@ -164,6 +136,35 @@ module Test
 
         selector = self.class.selector(selector_name)
         return [selector.keys.first, selector.values.first]
+      end
+
+      def root
+        if self.class.root.nil? && self.class.name_element.nil?
+          return @driver
+        elsif self.class.root && self.class.name_element.nil?
+          begin
+            return @driver.find_element(*self.class.root)
+          rescue Selenium::WebDriver::Error::NoSuchElementError => e
+            raise WidgetNotPresentError, "#{self.class.name} not found on page"
+          end
+        elsif self.class.root && self.class.name_element
+          all_instances = @driver.find_elements(*self.class.root)
+          target = all_instances.find do |root_element|
+            begin
+              element_name = root_element.find_element(*self.class.name_element).text
+              @name == element_name
+            rescue Selenium::WebDriver::Error::ObsoleteElementError
+              false
+            end
+          end
+          if target.nil?
+            raise WidgetNotPresentError, "#{self.class.name} with name \"#{name}\" not found"
+          end
+          
+          return target
+        else
+          raise IAmConfusedError
+        end
       end
     end
   end

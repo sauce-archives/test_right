@@ -42,6 +42,8 @@ class TestWidget < Test::Unit::TestCase
   end
 
   def teardown
+    self.class.send(:remove_const, :WidgetThatDoesThings)
+
     Test::Right::Widget.wipe!
     Test::Right::Feature.wipe!
   end
@@ -162,14 +164,26 @@ class TestWidget < Test::Unit::TestCase
       named_by :css => '.name'
     end
 
+    assert_equal [:css, '.name'], WidgetThatDoesThings.name_element
+  end
+
+  def test_indexing_to_find_by_name
+    WidgetThatDoesThings.instance_eval do
+      rooted_at :css => '.widget'
+      named_by :css => '.name'
+    end
+
+    w = WidgetThatDoesThings['foo'].new(@driver)
+    assert w.is_a? WidgetThatDoesThings
+    assert_equal "foo", w.instance_eval{@name}
+
     target = mock()
     @driver.expects(:find_elements).with(:css, '.widget').returns([target])
-
     name_element = mock()
     name_element.expects(:text).returns("foo")
     target.expects(:find_element).with(:css, '.name').returns(name_element)
 
-    assert_not_nil @widget['foo']
+    assert w.exists?
   end
 
   def test_element

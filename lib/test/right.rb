@@ -8,6 +8,7 @@ end
 require 'test/right/errors'
 require 'test/right/utils'
 require 'test/right/config'
+require 'test/right/widget_proxy'
 require 'test/right/widget'
 require 'test/right/assertions'
 require 'test/right/feature'

@@ -11,7 +11,7 @@ class MockDriver < Test::Right::BrowserDriver
 
   private
   def method_missing(name, *args)
-    raise "Method Not found"
+    raise "Method Not found: #{name}"
   end
 end
 
