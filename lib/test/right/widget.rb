@@ -61,7 +61,11 @@ module Test
 
         all_instances = @driver.find_elements(*self.class.root)
         target = all_instances.find do |root_element|
-          name == root_element.find_element(*self.class.name_element).text
+          begin
+            name == root_element.find_element(*self.class.name_element).text
+          rescue Selenium::WebDriver::Error::ObsoleteElementError
+            # ignore
+          end
         end
         return self.class.new(@driver, target)
       end
