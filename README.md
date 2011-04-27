@@ -15,36 +15,45 @@ The test_right executable will create a default directory structure in
 test/right for you to put your tests in.
 
 Begin by setting the base_url setting in test/right/config.yml to the base URL
-of your application staging environment. Then, locate the testable elements
-on your pages and add their locators to selectors.rb:
+of your application staging environment. Then add the necessary code to reset
+your application state and launch your server to setup.rb.
 
-    widget "login" do
-      field :username, :id => 'username'
-      button :login, :xpath => "//input[@type='submit']"
-    end
+Tests are defined in terms of _actions_ on _widgets_. A widget is a piece of
+functionality present on one more more pages of your applicaiton. A single
+page can have many widgets, and multiple copies of a widget may appear on the
+same page.
 
-Once you've identified enough elements to write your tests, implement the
-actions of your widgets in widgets/. For example, something like the following
-in test/right/widgets/login.rb.
+To write tests, start by adding widgets in the widgets/ directory. A widget
+defines its elements in terms of standard Selenium 2 selectors and actions in
+terms of those elements. For example, something like the following in
+test/right/widgets/login.rb.
 
     class LoginWidget < Test::Right::Widget
+      field :username, :id => 'username'
+      button :login, :xpath => "//input[@type='submit']"
+
       def login(username, password)
         fill_in :username, username
         click :login
       end
     end
 
-Each widget class should be associated with a particular piece of
-functionality on one or more web pages. It's up to you to organize your
-widgets as you see fit.
-
 Once your widgets are setup, you can test features by adding files in
 test/right/features/. For example, test/right/features/shopping_cart.rb:
 
     class ShoppingCartFeature < Test::Right::Feature
       def test_adding_item
-        widgets[:login].login
-        widgets[:item].add_an_item
-        widgets[:cart].validate!
+        with LoginWidget do |w|
+          w.login
+        end
+
+        with ItemWidget do |w|
+          w.add_an_item
+        end
+
+        with CartWidget do |w|
+          assert {
+            w.number_of_items == 1
+        end
       end
     end
