@@ -39,9 +39,9 @@ module Test
         end
 
         def action(name, &body)
-          define_method name do
+          define_method name do |*args|
             self.validate!
-            self.instance_eval &body
+            self.instance_exec *args, &body
           end
         end
 
@@ -166,11 +166,17 @@ module Test
           end
         end
 
-        begin
-          root.find_element(*selector)
-        rescue Selenium::WebDriver::Error::NoSuchElementError => e
-          raise ElementNotFoundError, "Element #{selector_name} not found on #{self.class.name} using #{selector.inspect}"
+        target = nil
+        while target.nil?
+          begin
+            target = root.find_element(*selector)
+          rescue Selenium::WebDriver::Error::NoSuchElementError => e
+            raise ElementNotFoundError, "Element #{selector_name} not found on #{self.class.name} using #{selector.inspect}"
+          rescue Selenium::WebDriver::Error::ObsoleteElementError
+            # ignore
+          end
         end
+        return target
       end
 
       def get_elements(selector_name)

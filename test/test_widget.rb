@@ -153,6 +153,10 @@ class TestWidget < Test::Unit::TestCase
       action :frob do
         click :foo
       end
+
+      action :withargs do |arg|
+        $got_arg = arg
+      end
     end
 
     target = mock()
@@ -161,6 +165,10 @@ class TestWidget < Test::Unit::TestCase
     target.expects(:click)
 
     @widget.frob
+
+    $got_arg = false
+    @widget.withargs true
+    assert $got_arg
   end
 
   def test_property
