@@ -63,7 +63,6 @@ module Test
         target = all_instances.find do |root_element|
           begin
             element_name = root_element.find_element(*self.class.name_element).text
-            p [name, element_name, name == element_name]
             name == element_name
           rescue Selenium::WebDriver::Error::ObsoleteElementError
             false
@@ -109,6 +108,11 @@ module Test
       def fill_in(selector_name, value)
         get_element(selector_name).send_keys(value)
       end
+
+      def clear(selector_name)
+        get_element(selector_name).clear
+      end
+      
       
       def click(selector_name)
         get_element(selector_name).click
