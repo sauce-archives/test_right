@@ -62,12 +62,18 @@ module Test
         all_instances = @driver.find_elements(*self.class.root)
         target = all_instances.find do |root_element|
           begin
-            name == root_element.find_element(*self.class.name_element).text
+            element_name = root_element.find_element(*self.class.name_element).text
+            p [name, element_name, name == element_name]
+            name == element_name
           rescue Selenium::WebDriver::Error::ObsoleteElementError
-            # ignore
+            false
           end
         end
-        return self.class.new(@driver, target)
+        if target.nil?
+          raise WidgetNotPresentError, "#{self.class.name} with name \"#{name}\" not found"
+        else
+          return self.class.new(@driver, target)
+        end
       end
 
       def exists?

@@ -9,6 +9,6 @@ module Test
     class ElementNotFoundError < Error; end
     class AssertionFailedError < Error; end
     class WidgetConfigurationError < Error; end
-    class WidgetNotPresentErorr < Error; end
+    class WidgetNotPresentError < Error; end
   end
 end

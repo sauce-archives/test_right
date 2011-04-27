@@ -10,8 +10,11 @@ module Test
 
         start = Time.now
         while Time.now-start < timeout
-          if yield
-            return
+          begin
+            if yield
+              return
+            end
+          rescue WidgetNotPresentError
           end
           sleep(0.5)
         end
