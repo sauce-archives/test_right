@@ -66,6 +66,9 @@ class TestRunner < Test::Unit::TestCase
       def test_ab
         $test_sequence << :ab
       end
+      def test_ac
+        $test_sequence << :ac
+      end
     end
 
     class FeatureB < Test::Right::Feature
@@ -74,6 +77,9 @@ class TestRunner < Test::Unit::TestCase
       end
       def test_bb
         $test_sequence << :bb
+      end
+      def test_bc
+        $test_sequence << :bc
       end
     end
     FEATURES
@@ -87,5 +93,21 @@ class TestRunner < Test::Unit::TestCase
     second_sequence = Array.new($test_sequence)
 
     assert_not_equal first_sequence, second_sequence
+  end
+
+  def test_setup
+    eval <<-CLASSDEFS
+    class FeatureWithSetup < Test::Right::Feature
+      def setup
+        @foo = 1
+      end
+
+      def test_foo
+        raise "Foo not defined" if @foo.nil?
+      end
+    end
+    CLASSDEFS
+    runner = Test::Right::Runner.new(Test::Right::Config.new, [], [FeatureWithSetup])
+    assert runner.run
   end
 end

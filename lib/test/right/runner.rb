@@ -46,6 +46,9 @@ module Test
 
       def run_test(feature, method)
         target = feature.new(self)
+        if target.respond_to? :setup
+          target.setup
+        end
         target.send(method)
       end
 
