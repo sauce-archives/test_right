@@ -127,6 +127,51 @@ class TestWidget < Test::Unit::TestCase
     assert_equal "/foo/bar", WidgetThatDoesThings.instance_eval{@location}
   end
 
+  def test_rooted_at
+    WidgetThatDoesThings.instance_eval do
+      rooted_at :css => '.widget'
+      
+      def frob
+        click :thingie
+      end
+    end
+
+    target = mock()
+    @driver.expects(:find_element).with(:css, '.widget').returns(target)
+    target.expects(:find_element).with(:id, 'f').returns(target)
+    target.expects(:frob)
+
+    @widget.frob
+  end
+
+  def test_validated_by_presence_of
+    WidgetThatDoesThings.instance_eval do
+      rooted_at :id => 'foo'
+
+      validated_by_presence_of :root
+    end
+
+    @driver.expects(:find_element).with(:id, 'foo')
+    assert @widget.exists?
+
+  end
+
+  def test_named_by
+    WidgetThatDoesThings.instance_eval do
+      rooted_at :css => '.widget'
+      named_by :css => '.name'
+    end
+
+    target = mock()
+    @driver.expects(:find_elements).with(:css, '.widget').returns([target])
+
+    name_element = mock()
+    name_element.expects(:text).returns("foo")
+    target.expects(:find_element).with(:css, '.name').returns(name_element)
+
+    assert_not_nil @widget['foo']
+  end
+
   def test_element
     WidgetThatDoesThings.instance_eval do
       element :foo, :id => "foo"

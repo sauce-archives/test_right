@@ -5,7 +5,7 @@ class TestAssertions < Test::Unit::TestCase
     assert_raises Test::Right::AssertionFailedError do
       x = Object.new
       x.send(:extend, Test::Right::Assertions)
-      x.assert(1) {
+      x.assert(0.1) {
         false
       }
     end

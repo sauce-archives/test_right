@@ -8,5 +8,7 @@ module Test
     class SelectorsNotFoundError < Error; end
     class ElementNotFoundError < Error; end
     class AssertionFailedError < Error; end
+    class WidgetConfigurationError < Error; end
+    class WidgetNotPresentErorr < Error; end
   end
 end
