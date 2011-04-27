@@ -146,6 +146,46 @@ class TestWidget < Test::Unit::TestCase
     @widget.frob
   end
 
+  def test_action
+    WidgetThatDoesThings.instance_eval do
+      rooted_at :css => '.widget'
+
+      action :frob do
+        click :foo
+      end
+    end
+
+    target = mock()
+    @driver.expects(:find_element).at_least_once.with(:css, '.widget').returns(target)
+    target.expects(:find_element).with(:id, 'foo').returns(target)
+    target.expects(:click)
+
+    @widget.frob
+  end
+
+  def test_property
+    WidgetThatDoesThings.instance_eval do
+      rooted_at :css => '.widget'
+
+      property :fooness do
+        get_element(:foo).text
+      end
+    end
+
+    target = mock()
+    @driver.expects(:find_element).at_least_once.with(:css, '.widget').returns(target)
+    target.expects(:find_element).at_least_once.with(:id, 'foo').returns(target)
+    target.expects(:text).returns("I am text")
+
+    fooness = @widget.fooness
+    assertable = Object.new
+    assertable.send(:extend, Test::Right::Assertions)
+    assertable.assert_equal "I am text", fooness
+
+    target.expects(:text).returns("I am more text")
+    assertable.assert_equal "I am more text", fooness
+  end
+
   def test_validated_by_presence_of
     WidgetThatDoesThings.instance_eval do
       rooted_at :id => 'foo'
@@ -162,9 +202,10 @@ class TestWidget < Test::Unit::TestCase
     WidgetThatDoesThings.instance_eval do
       rooted_at :css => '.widget'
       named_by :css => '.name'
+      named_by :value, :css => '.name'
     end
 
-    assert_equal [:css, '.name'], WidgetThatDoesThings.name_element
+    assert_equal [[:text, :css, '.name'], [:value, :css, '.name']], WidgetThatDoesThings.name_elements
   end
 
   def test_indexing_to_find_by_name

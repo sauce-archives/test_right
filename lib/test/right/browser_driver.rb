@@ -22,6 +22,7 @@ module Test
       private
 
       def relative_url(url)
+        raise ConfigurationError, "No base_url in config.yml" if @base_url.nil?
         @base_url + url
       end
 

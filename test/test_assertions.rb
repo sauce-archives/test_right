@@ -1,6 +1,11 @@
 require 'helper'
 
 class TestAssertions < Test::Unit::TestCase
+  def setup
+    @assertable = Object.new
+    @assertable.send(:extend, Test::Right::Assertions)
+  end
+
   def test_assert
     assert_raises Test::Right::AssertionFailedError do
       x = Object.new
@@ -40,6 +45,31 @@ class TestAssertions < Test::Unit::TestCase
       x.assert(1) {
         y
       }
+    end
+  end
+
+  def test_assert_equal
+    assert_nothing_raised do
+      @assertable.assert_equal 1, 1
+    end
+    assert_raises Test::Right::AssertionFailedError do
+      @assertable.assert_equal 1, 2
+    end
+  end
+
+  def test_assert_equal_on_value
+    x = 1
+    v = Test::Right::Value.new do
+      x
+    end
+
+    Thread.new do
+      sleep 0.5
+      x = 2
+    end
+
+    assert_nothing_raised do
+      @assertable.assert_equal 1, v
     end
   end
 end

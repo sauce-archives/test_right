@@ -21,6 +21,16 @@ module Test
 
         raise AssertionFailedError, "Assertion failed after #{timeout} seconds"
       end
+
+      def assert_equal(expected, actual, timeout=DEFAULT_ASSERTION_TIMEOUT)
+        if actual.is_a? Value
+          assert do
+            expected == actual.value
+          end
+        else
+          raise AssertionFailedError, "Expected #{expected.inspect} but got #{actual.inspect}" unless expected == actual
+        end
+      end
     end
   end
 end
