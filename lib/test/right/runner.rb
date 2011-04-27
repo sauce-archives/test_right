@@ -3,9 +3,8 @@ module Test
     class Runner
       attr_reader :results, :widget_classes, :driver
 
-      def initialize(config, selector_library, widgets, features)
+      def initialize(config, widgets, features)
         @config = config
-        @selectors = selector_library
         @widget_classes = widgets
         @features = features
         @results = {}
@@ -53,25 +52,6 @@ module Test
       def widgets
         @widget_finder ||= WidgetFinder.new(self)
       end
-
-      def selectors_for(klass)
-        name = klass.name.split(':').last.match(/^(.*)Widget$/)[1]
-        name = underscore(name).gsub(/_/, ' ')
-        return @selectors.widgets[name]
-      end
-
-      private
-
-      def underscore(camel_cased_word)
-        word = camel_cased_word.to_s.dup
-        word.gsub!(/::/, '/')
-        word.gsub!(/([A-Z]+)([A-Z][a-z])/,'\1_\2')
-        word.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
-        word.tr!("-", "_")
-        word.downcase!
-        word
-      end
-
     end
   end
 end

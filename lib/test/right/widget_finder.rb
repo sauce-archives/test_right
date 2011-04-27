@@ -27,12 +27,7 @@ module Test
           raise WidgetNotFoundError, "Widget for \"#{original_name}\" not found"
         end
 
-        selectors = @runner.selectors_for(klass)
-
-        if selectors.nil?
-          raise SelectorsNotFoundError, "Selectors for \"#{original_name}\" widget not found"
-        end
-        @widgets[klass] ||= klass.new(@runner.driver, selectors)
+        @widgets[klass] ||= klass.new(@runner.driver)
       end
       
       private

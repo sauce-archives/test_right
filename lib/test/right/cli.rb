@@ -25,14 +25,13 @@ module Test
         end
 
         load_config
-        load_selectors
         load_widgets
         load_features
         
         Dir.chdir("../..") if subdir
 
         puts "Running #{features.size} features"
-        runner = Runner.new(config, selectors, widgets, features)
+        runner = Runner.new(config, widgets, features)
         if runner.run
           puts "Passed!"
         else
@@ -79,21 +78,6 @@ module Test
 
       def config
         @config
-      end
-
-
-      def load_selectors
-        begin
-          selectors_definition = IO.read('selectors.rb')
-          @selectors = SelectorLibrary.new
-          @selectors.instance_eval(selectors_definition)
-        rescue Errno::ENOENT
-          raise ConfigurationError, "selectors.rb not found"
-        end
-      end
-
-      def selectors
-        @selectors
       end
 
       def load_widgets

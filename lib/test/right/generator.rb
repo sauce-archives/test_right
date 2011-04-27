@@ -13,7 +13,6 @@ module Test
         mkdir_p("test/right/features")
         mkdir_p("test/right/widgets")
 
-        touch("test/right/selectors.rb")
         open("test/right/config.yml", 'wb') do |file|
           file.write <<-EOF
 # The base URL of your staging server

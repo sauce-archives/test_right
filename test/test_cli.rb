@@ -4,24 +4,6 @@ require 'tmpdir'
 class TestCLI < Test::Unit::TestCase
   include TestRightTestingUtils
 
-  def test_fails_with_no_selectors_file
-    assert_raises Test::Right::ConfigurationError do
-      cli = Test::Right::CLI.new
-      cli.load_selectors
-    end
-  end
-
-  def test_parses_selectors
-    in_new_dir do
-      make_selectors_file
-
-      cli = Test::Right::CLI.new
-      cli.load_selectors
-
-      assert !cli.selectors.widgets.empty?, "No widget found from generated selectors.rb"
-    end
-  end
-
   def test_fails_with_no_widgets_dir
     assert_raises Test::Right::ConfigurationError do
       cli = Test::Right::CLI.new
@@ -64,7 +46,6 @@ class TestCLI < Test::Unit::TestCase
 
   def test_start
     in_new_dir do
-      make_selectors_file
       make_widget
       make_feature
 
@@ -97,7 +78,6 @@ class TestCLI < Test::Unit::TestCase
       Dir.mkdir("test")
       Dir.mkdir("test/right")
       Dir.chdir("test/right") do
-        make_selectors_file
         make_widget
         make_feature
       end
@@ -120,7 +100,6 @@ end
 
         f.chmod(0755)
       end
-      make_selectors_file
       make_widget
       make_feature
 
@@ -137,16 +116,6 @@ end
       f.print <<-CONFIG
         base_url: http://TESTING
       CONFIG
-    end
-  end
-
-  def make_selectors_file
-    File.open "selectors.rb", "wb" do |f|
-      f.print <<-SELECTORS
-        widget "Foo" do
-          field :foo, :id => 'bar'
-        end
-      SELECTORS
     end
   end
 

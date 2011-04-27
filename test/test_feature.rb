@@ -21,9 +21,7 @@ class TestFeature < Test::Unit::TestCase
   end
 
   def test_has_access_to_widgets
-    library = Test::Right::SelectorLibrary.new
-    library.widget('foo'){}
-    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [FooWidget], [])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, [FooWidget], [])
     feature = FeatureThatUsesOneWidget.new(runner)
     feature.test_widget
   end

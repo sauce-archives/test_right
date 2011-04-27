@@ -3,13 +3,40 @@ module Test
     class Widget
       extend Utils::SubclassTracking
 
-      def initialize(driver, selectors)
+      module ClassMethods
+        def selector(name)
+          @selectors[name]
+        end
+
+        def element(name, locator)
+          @selectors[name] = locator
+        end
+
+        def lives_at(url)
+          @location = url
+        end
+
+        alias_method :button, :element
+        alias_method :field, :element
+      end
+
+      def self.inherited(subclass)
+        @subclasses ||= [] 
+        @subclasses << subclass 
+        subclass.instance_eval do
+          @selectors = {}
+          @location = nil
+        end
+
+        subclass.extend(ClassMethods)
+      end
+
+      def initialize(driver)
         @driver = driver
-        @selectors = selectors
       end
 
       def visit
-        @driver.get(@selectors.location, :relative => true)
+        @driver.get(@location, :relative => true)
       end
 
       def method_missing(name, *args)
@@ -49,11 +76,11 @@ module Test
       end
 
       def find_selector(selector_name)
-        if !@selectors.include?(selector_name)
+        if !self.class.selector(selector_name)
           raise SelectorNotFoundError, "Selector \"#{selector_name}\" for Widget \"#{self.class}\" not found"
         end
 
-        selector = @selectors[selector_name]
+        selector = self.class.selector(selector_name)
         return [selector.keys.first, selector.values.first]
       end
     end

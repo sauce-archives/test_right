@@ -13,10 +13,7 @@ class TestWidgetFinder < Test::Unit::TestCase
     end
     CLASSDEFS
 
-    library = Test::Right::SelectorLibrary.new
-    library.widget("simple"){}
-    library.widget("two word"){}
-    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [SimpleWidget, TwoWordWidget, NoSelectorsWidget], [])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, [SimpleWidget, TwoWordWidget, NoSelectorsWidget], [])
     @widget_finder = Test::Right::WidgetFinder.new(runner)
   end
 
@@ -35,12 +32,6 @@ class TestWidgetFinder < Test::Unit::TestCase
 
     assert_raises Test::Right::WidgetNotFoundError do
       @widget_finder["not here"]
-    end
-  end
-
-  def test_raises_when_selectors_not_found
-    assert_raises Test::Right::SelectorsNotFoundError do
-      @widget_finder[:no_selectors]
     end
   end
 end

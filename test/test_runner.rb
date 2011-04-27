@@ -15,6 +15,7 @@ class TestRunner < Test::Unit::TestCase
     end
 
     class SimpleWidget < Test::Right::Widget
+      field :foo, :id => 'foo'
       def an_action
       end
     end
@@ -32,61 +33,27 @@ class TestRunner < Test::Unit::TestCase
   end
 
   def test_runs_nothing_on_nothing
-    runner = Test::Right::Runner.new(Test::Right::Config.new, nil, [], [])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, [], [])
     assert runner.run
   end
 
   def test_passes
-    library = Test::Right::SelectorLibrary.new
-    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [], [PassingFeature])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, [], [PassingFeature])
 
     assert runner.run, "Runner should have passed: #{runner.results}"
     assert runner.results.include?(PassingFeature), "Didn't run Google Search"
   end
 
   def test_fails
-    library = Test::Right::SelectorLibrary.new
-    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [], [FailingFeature])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, [], [FailingFeature])
 
     assert !runner.run, "Runner should have failed"
     assert runner.results[FailingFeature][:test_fail] != true
   end
 
   def test_widgets
-    library = Test::Right::SelectorLibrary.new
-    library.widget("simple"){}
-    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [SimpleWidget], [FailingFeature])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, [SimpleWidget], [FailingFeature])
     assert runner.widgets["simple"].is_a? SimpleWidget
-  end
-
-  def test_injects_selectors_into_widgets
-    library = Test::Right::SelectorLibrary.new
-    library.widget "simple" do
-      field :foo, :id => 'foo'
-    end
-    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [SimpleWidget], [])
-    widget = runner.widgets["simple"]
-    selectors = widget.instance_eval{@selectors}
-    assert_not_nil selectors
-    assert_equal({:id => 'foo'}, selectors[:foo])
-  end
-
-  def test_selectors_for
-    library = Test::Right::SelectorLibrary.new
-    library.widget "simple" do
-      field :foo, :id => 'foo'
-    end
-
-    library.widget "two word" do
-
-    end
-
-    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [SimpleWidget], [])
-
-    assert_nothing_raised do
-      assert_not_nil runner.selectors_for(SimpleWidget)
-      assert_not_nil runner.selectors_for(TwoWordWidget)
-    end
   end
 
   def test_random_test_order
@@ -111,8 +78,7 @@ class TestRunner < Test::Unit::TestCase
     end
     FEATURES
 
-    library = Test::Right::SelectorLibrary.new
-    runner = Test::Right::Runner.new(Test::Right::Config.new, library, [], [FeatureA, FeatureB])
+    runner = Test::Right::Runner.new(Test::Right::Config.new, [], [FeatureA, FeatureB])
     assert runner.run, runner.results.inspect
     first_sequence = Array.new($test_sequence)
 
