@@ -4,13 +4,17 @@ module Test
       extend Utils::SubclassTracking
       include Assertions
 
+      attr_reader :data
+
       WIDGET_TIMEOUT = 10 # seconds
 
-      def initialize(driver)
+      def initialize(driver, data)
         @driver = driver
+        @data = data
       end
 
       private
+
       
       def with(widget_class)
         wait_for(widget_class)

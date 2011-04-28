@@ -4,7 +4,7 @@ Selenium::WebDriver::Firefox
 module Test
   module Right
     class Runner
-      attr_reader :results, :widget_classes, :driver
+      attr_reader :results, :widget_classes
 
       def initialize(config, widgets, features)
         @config = config
@@ -13,6 +13,7 @@ module Test
         @results = {}
         @pool = Threadz::ThreadPool.new(:initial_size => 2, :maximum_size => 2)
         @result_queue = Queue.new
+        @data_template = config[:data] || {}
       end
 
       def run
@@ -65,8 +66,10 @@ module Test
           driver = BrowserDriver.new(@config)
         end
 
+        data = DataFactory.new(@data_template)
+
         begin
-          target = feature.new(driver)
+          target = feature.new(driver, data)
           if target.respond_to? :setup
             target.setup
           end

@@ -31,7 +31,7 @@ class TestFeature < Test::Unit::TestCase
     widget.expects(:bar)
 
     FooWidget.expects(:new).at_least_once.returns(widget)
-    feature = FeatureThatUsesWith.new(@driver)
+    feature = FeatureThatUsesWith.new(@driver, nil)
     feature.use_with
 
     FooWidget.expects(:new).returns(widget)
@@ -61,7 +61,24 @@ class TestFeature < Test::Unit::TestCase
     widget.expects(:exists?).at_least_once.returns(true)
 
     FooWidget.expects(:new).at_least_once.returns(widget)
-    feature = FeatureThatUsesWaitFor.new(@driver)
+    feature = FeatureThatUsesWaitFor.new(@driver, nil)
     feature.use_wait_for
+  end
+
+  def test_data
+    $data_value = nil
+
+    eval <<-CLASSDEFS
+    class FeatureThatUsesData < Test::Right::Feature
+      def use_data
+        $data_value = data[:foo]
+      end
+    end
+    CLASSDEFS
+
+    data = {:foo => 'foo'}
+    feature = FeatureThatUsesData.new(@driver, data)
+    feature.use_data
+    assert_equal 'foo', $data_value
   end
 end
