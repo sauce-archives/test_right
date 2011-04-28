@@ -51,11 +51,6 @@ class TestRunner < Test::Unit::TestCase
     assert runner.results[FailingFeature][:test_fail] != true
   end
 
-  def test_widgets
-    runner = Test::Right::Runner.new(Test::Right::Config.new, [SimpleWidget], [FailingFeature])
-    assert runner.widgets["simple"].is_a? SimpleWidget
-  end
-
   def test_random_test_order
     $test_sequence = []
     eval <<-FEATURES

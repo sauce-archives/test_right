@@ -35,6 +35,9 @@ module Test
         if runner.run
           puts "Passed!"
         else
+          at_exit {
+            exit(1)
+          }
           puts "Failed:"
           runner.results.each do |feature, feature_result|
             puts "  #{feature}"

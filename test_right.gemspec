@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   ] + Dir.glob("lib/**/*")
   
   s.add_dependency("selenium-webdriver", ">= 0.2.0")
+  s.add_dependency("threadz", "~> 0.1.3")
 
   s.add_development_dependency("mocha", ">= 0.9.12")
 end

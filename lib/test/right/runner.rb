@@ -1,3 +1,6 @@
+# trigger autoload before the threads get ahold of it
+Selenium::WebDriver::Firefox
+
 module Test
   module Right
     class Runner
@@ -8,52 +11,69 @@ module Test
         @widget_classes = widgets
         @features = features
         @results = {}
+        @pool = Threadz::ThreadPool.new(:initial_size => 2, :maximum_size => 2)
+        @result_queue = Queue.new
       end
 
       def run
-        if $MOCK_DRIVER
-          @driver = MockDriver.new(@config)
-        else
-          @driver = BrowserDriver.new(@config)
+        @batch = @pool.new_batch
+
+        @features.sort_by{|x| rand(10000)}.all? do |feature|
+          run_feature(feature)
         end
 
-        begin
-          @features.sort_by{|x| rand(10000)}.all? do |feature|
-            run_feature(feature)
+        @batch.wait_until_done
+
+        process_results
+      end
+
+      def process_results
+        failed = false
+        until @result_queue.empty?
+          feature, method, result = @result_queue.pop
+          if result.is_a? Exception
+            failed = true
           end
-        ensure
-          @driver.quit
+          @results[feature] ||= {}
+          @results[feature][method] = result
         end
+        return !failed
       end
 
       def run_feature(feature)
         methods = feature.instance_methods
-        methods.sort_by{|x| rand(10000)}.all? do |method_name|
-          @results[feature] = {}
-          begin
-            if method_name =~ /^test_/
-              method = method_name.to_sym
-              @results[feature][method] = true
-              run_test(feature, method_name.to_sym)
+        methods.sort_by{|x| rand(10000)}.each do |method_name|
+          if method_name =~ /^test_/
+            @batch << Proc.new do
+              begin
+                method = method_name.to_sym
+                run_test(feature, method_name.to_sym)
+
+                @result_queue << [feature, method, true]
+              rescue => e
+                @result_queue << [feature, method, e]
+              end
             end
-            true
-          rescue => e
-            @results[feature][method] = e
-            false
           end
         end
       end
 
       def run_test(feature, method)
-        target = feature.new(self)
-        if target.respond_to? :setup
-          target.setup
+        if $MOCK_DRIVER
+          driver = MockDriver.new(@config)
+        else
+          driver = BrowserDriver.new(@config)
         end
-        target.send(method)
-      end
 
-      def widgets
-        @widget_finder ||= WidgetFinder.new(self)
+        begin
+          target = feature.new(driver)
+          if target.respond_to? :setup
+            target.setup
+          end
+          target.send(method)
+        ensure
+          driver.quit
+        end
       end
     end
   end

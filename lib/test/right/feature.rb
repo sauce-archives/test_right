@@ -6,23 +6,19 @@ module Test
 
       WIDGET_TIMEOUT = 10 # seconds
 
-      def initialize(runner)
-        @runner = runner
-      end
-
-      def widgets
-        @runner.widgets
+      def initialize(driver)
+        @driver = driver
       end
 
       private
       
       def with(widget_class)
         wait_for(widget_class)
-        yield widget_class.new(@runner.driver)
+        yield widget_class.new(@driver)
       end
 
       def wait_for(widget_class)
-        widget = widget_class.new(@runner.driver)
+        widget = widget_class.new(@driver)
 
         timeout = Time.now + WIDGET_TIMEOUT
         while Time.now < timeout

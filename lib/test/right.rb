@@ -1,4 +1,5 @@
 require 'test/unit/assertions'
+require 'threadz'
 
 module Test
   module Right

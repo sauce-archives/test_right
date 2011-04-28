@@ -7,24 +7,12 @@ class TestFeature < Test::Unit::TestCase
       def bar
       end
     end
-
-    class FeatureThatUsesOneWidget < Test::Right::Feature
-      def test_widget
-        widgets[:foo].bar
-      end
-    end
-
     CLASSDEFS
     @runner = Test::Right::Runner.new(Test::Right::Config.new, [FooWidget], []) 
   end
   def teardown
     Test::Right::Feature.wipe!
     Test::Right::Widget.wipe!
-  end
-
-  def test_has_access_to_widgets
-    feature = FeatureThatUsesOneWidget.new(@runner)
-    feature.test_widget
   end
 
   def test_with
