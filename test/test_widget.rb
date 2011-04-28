@@ -6,8 +6,14 @@ class TestWidget < Test::Unit::TestCase
     class SimpleWidget < Test::Right::Widget
     end
 
+    class RootedWidget < Test::Right::Widget
+      rooted_at :id => 'root'
+      element :foo, :id => 'foo'
+    end
+
     class WidgetThatDoesThings < Test::Right::Widget
       field :foo, :id => 'foo'
+      element :notfoo, :id => 'notfoo'
       element :frobbable, :id => 'f'
       element :foos, :css => '.foo'
 
@@ -17,6 +23,14 @@ class TestWidget < Test::Unit::TestCase
 
       def clickit
         click :foo
+      end
+
+      def selectit
+        select :foo
+      end
+
+      def clearit
+        clear :foo
       end
 
       def go_to_google
@@ -82,6 +96,25 @@ class TestWidget < Test::Unit::TestCase
     @widget.clickit
   end
 
+  def test_select
+    element = MockElement.new
+
+    @driver.expects(:find_element).with(:id, 'foo').returns(element)
+    element.expects(:select)
+
+    @widget.selectit
+  end
+
+  def test_clear
+    element = MockElement.new
+
+    @driver.expects(:find_element).with(:id, 'foo').returns(element)
+    element.expects(:clear)
+
+    @widget.clearit
+  end
+
+
   def test_navigate_to
     @driver.expects(:get).with("http://www.google.com")
 
@@ -112,6 +145,13 @@ class TestWidget < Test::Unit::TestCase
         get_element :foo
       end
     end
+
+    
+    mock_foo = mock()
+    @driver.expects(:find_element).with(:id, 'root').returns(mock_element)
+    mock_element.expects(:find_element).with(:id, 'foo').returns(mock_foo)
+    widget = RootedWidget.new(@driver)
+    assert_equal mock_foo, widget.send(:get_element, :foo)
   end
 
   def test_get_elements
@@ -203,7 +243,17 @@ class TestWidget < Test::Unit::TestCase
 
     @driver.expects(:find_element).with(:id, 'foo')
     assert @widget.exists?
+  end
 
+  def test_exists
+    WidgetThatDoesThings.instance_eval do
+      rooted_at :id => 'foo'
+
+      validated_by_presence_of :root
+    end
+
+    @widget.expects(:root).raises(Test::Right::WidgetNotPresentError)
+    assert !@widget.exists?
   end
 
   def test_named_by
@@ -240,6 +290,22 @@ class TestWidget < Test::Unit::TestCase
       element :foo, :id => "foo"
     end
     assert_equal([:id, 'foo'], @widget.instance_eval{find_selector(:foo)})
+  end
+
+  def test_wait_for_element_present
+    @driver.expects(:find_element).with(:id, 'foo').returns(mock())
+    w = WidgetThatDoesThings.new(@driver)
+    w.instance_eval do
+      wait_for_element_present(:foo)
+    end
+  end
+
+  def test_wait_for_element_not_present
+    @driver.expects(:find_element).with(:id, 'notfoo').raises(Selenium::WebDriver::Error::NoSuchElementError)
+    w = WidgetThatDoesThings.new(@driver)
+    w.instance_eval do
+      wait_for_element_not_present(:notfoo)
+    end
   end
 
   %w<field button>.each do |thingtype|
