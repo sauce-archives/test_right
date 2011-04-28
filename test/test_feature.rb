@@ -8,7 +8,7 @@ class TestFeature < Test::Unit::TestCase
       end
     end
     CLASSDEFS
-    @runner = Test::Right::Runner.new(Test::Right::Config.new, [FooWidget], []) 
+    @driver = MockDriver.new
   end
   def teardown
     Test::Right::Feature.wipe!
@@ -31,7 +31,7 @@ class TestFeature < Test::Unit::TestCase
     widget.expects(:bar)
 
     FooWidget.expects(:new).at_least_once.returns(widget)
-    feature = FeatureThatUsesWith.new(@runner)
+    feature = FeatureThatUsesWith.new(@driver)
     feature.use_with
 
     FooWidget.expects(:new).returns(widget)
@@ -46,5 +46,22 @@ class TestFeature < Test::Unit::TestCase
     ensure
       Test::Right::Feature.send(:const_set, 'WIDGET_TIMEOUT', saved_timeout)
     end
+  end
+
+  def test_wait_for
+    eval <<-CLASSDEFS
+    class FeatureThatUsesWaitFor < Test::Right::Feature
+      def use_wait_for
+        wait_for FooWidget
+      end
+    end
+    CLASSDEFS
+
+    widget = mock()
+    widget.expects(:exists?).at_least_once.returns(true)
+
+    FooWidget.expects(:new).at_least_once.returns(widget)
+    feature = FeatureThatUsesWaitFor.new(@driver)
+    feature.use_wait_for
   end
 end

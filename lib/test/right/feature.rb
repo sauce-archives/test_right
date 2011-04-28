@@ -22,12 +22,8 @@ module Test
 
         timeout = Time.now + WIDGET_TIMEOUT
         while Time.now < timeout
-          begin
-            break if widget.exists?
-          rescue WidgetNotPresentError
-            # ignore
-          end
-          sleep(0.5)
+          break if widget.exists?
+          sleep(0.25)
         end
         if !widget.exists?
           raise WidgetNotPresentError

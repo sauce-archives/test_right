@@ -22,6 +22,22 @@ class TestAssertions < Test::Unit::TestCase
         true
       }
     end
+
+    assert_raises ArgumentError do
+      @assertable.assert true
+    end
+  end
+
+  def test_ignores_missing_widget
+    raised = false
+    @assertable.assert {
+      if raised
+        true
+      else
+        raised = true
+        raise Test::Right::WidgetNotPresentError
+      end
+    }
   end
 
   def test_spinassert
