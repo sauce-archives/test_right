@@ -30,7 +30,7 @@ test/right/widgets/login.rb.
 
     class LoginWidget < Test::Right::Widget
       field :username, :id => 'username'
-      button :login, :xpath => "//input[@type='submit']"
+      button :login, :css => "input[type=submit]"
 
       action :login |username, password|
         fill_in :username, username
