@@ -47,14 +47,17 @@ test/right/widgets/login.rb.
     end
 
 Once your widgets are setup, you can test features by adding files in
-test/right/features/. For example, test/right/features/shopping_cart.rb:
+test/right/features/. For example, something like this would go in
+test/right/features/shopping_cart.rb:
 
     class ShoppingCartFeature < Test::Right::Feature
-      def test_adding_item
+      def setup
         with LoginWidget do |w|
           w.login
         end
+      end
 
+      def test_adding_item
         with ItemWidget do |w|
           w.add_an_item
         end
@@ -64,3 +67,5 @@ test/right/features/. For example, test/right/features/shopping_cart.rb:
         end
       end
     end
+
+Learn more on the Test::Right wiki at https://github.com/saucelabs/test_right/wiki!
