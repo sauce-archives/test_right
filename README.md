@@ -2,7 +2,9 @@ Test::Right - Opinionated full-stack browser testing
 =================================================
 
 Test::Right is a testing framework designed to help users get maximum value out
-of browser testing.
+of browser testing. It provides a flexible Page Object model for building
+robust, reliable tests quickly and easily. No more slogging through XPaths in
+Selenium IDE: Test::Right is the right way to build browser tests.
 
 Setup
 -----
@@ -23,10 +25,10 @@ widget is a piece of functionality present on one more more pages of your
 application. A single page can have many widgets, and multiple copies of a
 widget may appear on the same page.
 
-To write tests, start by adding widgets in the widgets/ directory. A widget
+To get started, add widget definitions to the widgets/ directory. A widget
 defines its elements in terms of standard Selenium 2 selectors and actions in
-terms of those elements. For example, something like the following in
-test/right/widgets/login.rb.
+terms of those elements. For example, something like this in
+test/right/widgets/login.rb:
 
     class LoginWidget < Test::Right::Widget
       field :username, :id => 'username'
@@ -46,8 +48,8 @@ test/right/widgets/login.rb.
       end
     end
 
-Once your widgets are setup, you can test features by adding files in
-test/right/features/. For example, something like this would go in
+Once your widgets are setup, write tests for features of your application in
+test/right/features. For example, something like this would go in
 test/right/features/shopping_cart.rb:
 
     class ShoppingCartFeature < Test::Right::Feature
@@ -68,4 +70,4 @@ test/right/features/shopping_cart.rb:
       end
     end
 
-Learn more on the Test::Right wiki at https://github.com/saucelabs/test_right/wiki!
+Learn more on the Test::Right wiki at https://github.com/saucelabs/test_right/wiki
