@@ -22,6 +22,11 @@ base_url: http://example.com/
 browser: firefox
           EOF
         end
+
+        open("test/right/setup.rb", 'wb') do |file|
+          file.write "\n"
+        end
+        File.chmod(0755, "test/right/setup.rb")
       end
     end
   end
