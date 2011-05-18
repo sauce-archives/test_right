@@ -34,7 +34,7 @@ test/right/widgets/login.rb:
       field :username, :id => 'username'
       button :login, :css => "input[type=submit]"
 
-      action :login |username, password|
+      action :login do |username, password|
         fill_in :username, username
         click :login
       end
