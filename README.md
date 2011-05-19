@@ -65,7 +65,7 @@ test/right/features/shopping_cart.rb:
         end
 
         with CartWidget do |w|
-          assert_equal, 1, w.number_of_items 
+          assert_equal 1, w.number_of_items 
         end
       end
     end
