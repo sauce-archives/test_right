@@ -75,7 +75,14 @@ module Test
           end
           target.send(method)
         ensure
-          driver.quit
+          # Run any teardown logic if it exists
+          begin
+            if target and target.respond_to? :teardown
+              target.teardown
+            end
+          ensure
+            driver.quit
+          end
         end
       end
     end
