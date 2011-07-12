@@ -81,7 +81,8 @@ module Test
       end
 
       def visit
-        @driver.get(self.class.location, :relative => true)
+        relative = !(self.class.location =~ /^https?:/)
+        @driver.get(self.class.location, :relative => relative)
       end
 
       def exists?
