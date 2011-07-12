@@ -8,7 +8,7 @@ module Test
         if @base_url =~ /\/$/
           @base_url = @base_url[0..-2]
         end
-        @driver = Selenium::WebDriver.for :firefox
+        @driver = Selenium::WebDriver.for config[:browser].to_sym
       end
 
       def get(url, options = {})
