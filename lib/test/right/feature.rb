@@ -8,6 +8,10 @@ module Test
 
       WIDGET_TIMEOUT = 10 # seconds
 
+      def self.test(name, &b)
+        define_method "test_#{name.gsub(' ', '_')}", &b
+      end
+
       def initialize(driver, data)
         @driver = driver
         @data = data
