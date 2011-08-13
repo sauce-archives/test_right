@@ -88,10 +88,17 @@ module Test
       def exists?
         begin
           root
-          return true
+          return valid?
         rescue WidgetNotPresentError
           return false
         end
+      end
+
+      def valid?
+        validator = self.class.validator
+        validator.nil? || @driver.find_element(validator)
+      rescue Selenium::WebDriver::Error::NoSuchElementError => e
+        false
       end
 
       def validate!(timeout=15)
