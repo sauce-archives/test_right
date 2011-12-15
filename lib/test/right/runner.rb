@@ -1,3 +1,4 @@
+require 'test/right/slow_driver'
 # trigger autoload before the threads get ahold of it
 Selenium::WebDriver::Firefox
 
@@ -60,10 +61,16 @@ module Test
       end
 
       def run_test(feature, method)
+        driver = nil
+
         if $MOCK_DRIVER
           driver = MockDriver.new(@config)
         else
           driver = BrowserDriver.new(@config)
+        end
+
+        if @config[:slow]
+          driver = SlowDriver.new(driver)
         end
 
         data = DataFactory.new(@data_template)
