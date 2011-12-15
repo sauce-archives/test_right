@@ -1,4 +1,5 @@
 require 'yaml'
+require 'optparse'
 
 module Test
   module Right
@@ -27,6 +28,16 @@ module Test
         load_config
         load_widgets
         load_features
+
+        OptionParser.new do |opts|
+          opts.on("-s", "--slow", "Run slower so you can see what's happening") do |v|
+            @config[:slow] = true
+          end
+          opts.on("-h", "--help", "Show this message") do
+            puts opts
+            exit
+          end
+        end.parse!
         
         Dir.chdir("../..") if subdir
 
